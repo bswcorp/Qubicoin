@@ -1,0 +1,260 @@
+Qubicoin Project Initializer
+
+import osimport subprocess
+# Configuration for Qubicoin ($QUBIC)PROJECT_NAME = "Qubicoin"SYMBOL = "QUBIC"MAX_SUPPLY = "200_000_000_000_000 * 10**18"  # 200 TrillionINITIAL_MINT = "20_000_000_000_000 * 10**18" # 10% for Liquidity/Dev
+def create_project():
+    """
+    Initializes the Qubicoin project structure on a Linux/Ubuntu system.
+    Creates contracts, scripts, documentation, and initializes Git.
+    """
+    
+    # 1. Define File Contents
+    
+    # Smart Contract (Solidity 0.8.24+)
+    # Includes Quantum Agility logic to allow future signature verification upgrades.
+    solidity_contract = f"""// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+/**
+ * @title Qubicoin
+ * @dev ERC20 Token with Quantum-Resistant Agility.
+ * Designed for the Sovereign Titan Genesis ecosystem.
+ */
+contract Qubicoin is ERC20, Ownable {{
+    uint256 public constant MAX_SUPPLY = {MAX_SUPPLY};
+    
+    // Quantum Agility: Placeholder for future Post-Quantum Cryptography (PQC) verifier
+    address public quantumVerifier;
+    bool public quantumSecurityEnabled = false;
+
+    event QuantumVerifierUpdated(address indexed newVerifier);
+    event QuantumSecurityToggled(bool enabled);
+
+    constructor() ERC20("{PROJECT_NAME}", "{SYMBOL}") Ownable(msg.sender) {{
+        // Mint initial 10% for liquidity and project development
+        _mint(msg.sender, {INITIAL_MINT});
+    }}
+
+    /**
+     * @dev Mint function for project expansion, capped by MAX_SUPPLY.
+     */
+    function mint(address to, uint256 amount) external onlyOwner {{
+        require(totalSupply() + amount <= MAX_SUPPLY, "Exceeds Max Supply");
+        _mint(to, amount);
+    }}
+
+    /**
+     * @dev Update the Quantum Signature Verifier contract.
+     * This allows the token to adapt to NIST-standardized algorithms like ML-DSA.
+     */
+    function setQuantumVerifier(address _verifier) external onlyOwner {{
+        require(_verifier != address(0), "Invalid address");
+        quantumVerifier = _verifier;
+        emit QuantumVerifierUpdated(_verifier);
+    }}
+
+    /**
+     * @dev Toggle enforcement of quantum-resistant checks.
+     */
+    function toggleQuantumSecurity(bool _enabled) external onlyOwner {{
+        require(quantumVerifier != address(0), "Verifier not set");
+        quantumSecurityEnabled = _enabled;
+        emit QuantumSecurityToggled(_enabled);
+    }}
+
+    /**
+     * @dev Override transfer to include a hook for quantum verification if enabled.
+     */
+    function _update(address from, address to, uint256 value) internal virtual override {{
+        if (quantumSecurityEnabled) {{
+            // Placeholder: Logic to call quantumVerifier for signature validation
+            // In 2026, this would involve verifying a zk-STARK or ML-DSA proof.
+        }}
+        super._update(from, to, value);
+    }}
+}}"""
+
+    # README.md
+    readme_content = f"""# {PROJECT_NAME} ($QUBIC)
+
+Qubicoin is a next-generation digital asset built for the **Sovereign Titan Genesis** ecosystem. 
+It features **Quantum Agility**, allowing the contract to upgrade its security layer as 
+Post-Quantum Cryptography (PQC) standards evolve in 2026 and beyond.
+
+## Technical Specifications
+- **Token Name:** {PROJECT_NAME}
+- **Symbol:** ${SYMBOL}
+- **Max Supply:** 200,000,000,000,000 (200T)
+- **Standard:** ERC-20 (Quantum-Ready)
+- **Network:** Designed for Polygon / Ethereum Layer 2
+
+## Project Structure
+- `contracts/`: Contains the Solidity smart contract.
+- `scripts/`: Python deployment and interaction scripts.
+- `LICENSE`: MIT Open Source license.
+
+## Getting Started
+1. Install dependencies: `npm install @openzeppelin/contracts`
+2. Deploy using the provided Python script: `python3 scripts/deploy.py`
+
+## Roadmap
+- **Q1 2026:** Initial Token Launch & Liquidity Pool setup.
+- **Q2 2026:** Integration with Sovereign Titan Governance.
+- **Q4 2026:** Deployment of NIST-approved Quantum Verifier.
+
+## License
+This project is licensed under the MIT License."""
+
+    # Deployment Script (Python/Web3.py)
+    deploy_script = """import os
+from web3 import Web3
+from dotenv import load_dotenv
+
+# Load environment variables (Private Key, RPC URL)
+load_dotenv()
+
+RPC_URL = os.getenv("RPC_URL", "https://polygon-rpc.com")
+PRIVATE_KEY = os.getenv("PRIVATE_KEY")
+web3 = Web3(Web3.HTTPProvider(RPC_URL))
+
+def deploy_contract():
+    if not PRIVATE_KEY:
+        print("Error: PRIVATE_KEY not found in environment.")
+        return
+
+    # Account setup
+    account = web3.eth.account.from_key(PRIVATE_KEY)
+    print(f"Deploying from: {account.address}")
+
+    # Note: You must compile the contract first to get ABI and Bytecode
+    # Use 'solc' or Remix IDE to generate these.
+    abi = [] # Replace with compiled ABI
+    bytecode = "0x..." # Replace with compiled Bytecode
+
+    Qubicoin = web3.eth.contract(abi=abi, bytecode=bytecode)
+
+    # Build transaction
+    construct_txn = Qubicoin.constructor().build_transaction({
+        'from': account.address,
+        'nonce': web3.eth.get_transaction_count(account.address),
+        'gas': 3000000,
+        'gasPrice': web3.to_wei('50', 'gwei')
+    })
+
+    # Sign and Send
+    signed_tx = web3.eth.account.sign_transaction(construct_txn, private_key=PRIVATE_KEY)
+    tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+    
+    print(f"Transaction sent! Hash: {tx_hash.hex()}")
+    print("Waiting for confirmation...")
+    receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+    print(f"Qubicoin deployed at: {receipt.contractAddress}")
+
+if __name__ == "__main__":
+    deploy_contract()"""
+
+    # MIT License
+    license_text = """MIT License
+
+Copyright (c) 2026 Qubicoin Project
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE."""
+
+    # .gitignore Content
+    # Essential for 2026 security to exclude secrets and build artifacts.
+    gitignore_content = """# Dependencies
+node_modules/
+jspm_packages/
+typings/
+
+# Secrets & Environment
+.env
+.env.local
+.env.production
+*.key
+*.pem
+
+# Build Artifacts (Hardhat/Foundry)
+artifacts/
+cache/
+typechain/
+typechain-types/
+out/
+
+# Testing & Coverage
+coverage/
+coverage.json
+.nyc_output
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+.env/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+*.swp"""
+
+    # 2. Create Directory Structure
+    folders = ['contracts', 'scripts']
+    for folder in folders:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+            print(f"Created directory: {folder}")
+
+    # 3. Write Files
+    files = {
+        "contracts/Qubicoin.sol": solidity_contract,
+        "README.md": readme_content,
+        "scripts/deploy.py": deploy_script,
+        "LICENSE": license_text,
+        ".gitignore": gitignore_content
+    }
+
+    for path, content in files.items():
+        with open(path, "w") as f:
+            f.write(content)
+        print(f"Created file: {path}")
+
+    # 4. Initialize Git Repository
+    try:
+        subprocess.run(["git", "init"], check=True)
+        print("Initialized empty Git repository.")
+        
+        # Optional: Initial add and commit
+        # subprocess.run(["git", "add", "."], check=True)
+        # subprocess.run(["git", "commit", "-m", "Initial commit: Qubicoin Project Setup"], check=True)
+        # print("Created initial commit.")
+    except Exception as e:
+        print(f"Warning: Git initialization failed. Is git installed? Error: {e}")
+
+    print("\nProject Initialization Complete!")
+    print("Next steps: Compile your contract and update the ABI in scripts/deploy.py.")
+if __name__ == "__main__":
+    create_project()
+
+
