@@ -1,0 +1,26 @@
+{
+  "header": {
+    "origin": "CIRACAS-MOBILE-COMMAND",
+    "target": "BINTARO-TITAN-CORE",
+    "protocol": "STG-Nusantara-Root",
+    "timestamp": "2024-05-20T14:00:00Z"
+  },
+  "payload": {
+    "action": "EXECUTE_MINT",
+    "parameters": {
+      "asset": "QUBICOIN",
+      "amount": "1000",
+      "recipient": "0xYourWalletAddress...",
+      "location_auth": "ꦏꦼꦢꦻꦴꦭꦠꦤ꧀-NUSA-001"
+    },
+    "quorum_state": {
+      "proposal_id": 101,
+      "status": "ACHIEVED",
+      "vote_ratio": "75%"
+    }
+  },
+  "signature": {
+    "type": "STG-ED25519",
+    "proof": "base64-encoded-signature-string"
+  }
+}
