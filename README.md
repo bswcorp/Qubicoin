@@ -41,6 +41,19 @@ Dalam ekosistem Titan, tata kelola adalah benteng pertahanan. Kami menggunakan *
 - [ ] Implementasi Quorum-State Dashboard
 - [ ] Operational Masterplan V1 Deployment
 
+# METAPORTATION & QUBICOIN ECOSYSTEM
+
+Welcome to the future of interstellar travel and quantum-safe economics.
+
+## Project Structure
+- [Technical Study](./docs/Technical-Metaportation-Study.md): Learn about the Dead Universe Theory and Space-Time Folding.
+- [Security Protocol](./docs/Qubicoin-Quantum-Protocol.md): Deep dive into Qubicoin's Quantum-Safe Security Layer (QSSL).
+
+## Vision
+To merge the **Dead Universe Factor** (Energy) with **Metaportation** (Travel) and **Qubicoin** (Security) into a single, unified interstellar infrastructure.
+
+**Lead Visionary:** Andi Muhammad Harpi
+anto
 ---
 **Nota Operasional:**
 Dikembangkan secara remote dengan semangat kedaulatan digital penuh.
