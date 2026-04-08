@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STG | Sovereign Emergency Dashboard</title>
+    <style>
+        :root {
+            --bg: #0a0a0a; --text: #00ff41; --accent: #003b00; --danger: #ff0000;
+        }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; padding: 10px; }
+        .card { border: 1px solid var(--accent); padding: 10px; margin-bottom: 10px; background: rgba(0, 59, 0, 0.1); }
+        .value { font-size: 1.5em; font-weight: bold; }
+        .alert-active { color: var(--danger); animation: blink 0.5s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        button { background: var(--accent); color: var(--text); border: 1px solid var(--text); padding: 10px; width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <div>STG-GOVERNMENT <span id="status-badge" style="background:var(--accent); padding:2px 5px;">SIAGA</span></div>
+        <button id="activate">AKTIFKAN SUARA & PANGGILAN DARURAT</button>
+    </header>
+
+    <div class="card" style="margin-top:10px;">
+        <small>PROBE BINTARO (19564)</small>
+        <div class="value" id="lat1">--ms</div>
+    </div>
+    <div class="card">
+        <small>PROBE CIRACAS (19546)</small>
+        <div class="value" id="lat2">--ms</div>
+    </div>
+
+    <div id="system-msg" class="card" style="font-size:0.8em;">MENUNGGU AKTIVASI...</div>
+
+    <script>
+        let isActive = false;
+        let callTriggered = false;
+        const synth = window.speechSynthesis;
+
+        document.getElementById('activate').onclick = () => {
+            isActive = true;
+            document.getElementById('activate').innerText = "SISTEM AKTIF";
+            speak("Sistem komando aktif. Panggilan darurat disiagakan.");
+        };
+
+        function speak(msg) {
+            if (!isActive || synth.speaking) return;
+            const utter = new SpeechSynthesisUtterance(msg);
+            utter.lang = 'id-ID'; synth.speak(utter);
+        }
+
+        async function triggerEmergencyCall() {
+            if (callTriggered) return;
+            callTriggered = true;
+            // Simulasi API Panggilan Suara Berdaulat (Web-Telephony 2026)
+            console.log("TRIGGERING EMERGENCY CALL TO CAPO...");
+            speak("PERINGATAN KRITIS. Gangguan total terdeteksi. Memulai panggilan darurat ke pusat komando.");
+            
+            // Mock API Call ke Twilio/SIP Interface
+            // fetch('https://api.stg-government.internal', { method: 'POST' });
+        }
+
+        function monitor() {
+            if (!isActive) return;
+            const l1 = Math.floor(Math.random() * 200);
+            const l2 = Math.floor(Math.random() * 200);
+            
+            document.getElementById('lat1').innerText = l1 + 'ms';
+            document.getElementById('lat2').innerText = l2 + 'ms';
+
+            if (l1 > 150 && l2 > 150) {
+                document.getElementById('system-msg').className = "card alert-active";
+                document.getElementById('system-msg').innerText = "GANGGUAN TOTAL TERDETEKSI!";
+                triggerEmergencyCall();
+            } else {
+                callTriggered = false;
+                document.getElementById('system-msg').className = "card";
+                document.getElementById('system-msg').innerText = "JALUR STABIL: 114-SYNC ACTIVE";
+            }
+        }
+
+        setInterval(monitor, 3000);
+    </script>
+</body>
+</html>
