@@ -6,6 +6,13 @@ Berfungsi sebagai unit dasar untuk swap, distribusi, dan integrasi lintas 12 Pil
 
 ---
 
+📌 Petunjuk penempatan:  
+- Simpan file ini sebagai `README.md` di **root folder repo Qubicoin**.  
+- Pastikan workflow sinkronisasi README aktif agar update otomatis masuk ke repo induk STG‑CHAIN.  
+
+Mau saya lanjutkan sekalian buatkan versi **README‑Showup.md** dengan badge audit dan grafik Chart.js?
+---
+
 ## ⚡ Integration Checklist
 
 ### 1. Documentation
