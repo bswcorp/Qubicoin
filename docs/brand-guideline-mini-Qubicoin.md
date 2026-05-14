@@ -66,4 +66,3 @@ agar semua tampilan visual di STG‑UNIFIED dan ekosistem STG‑Chain seragam, p
 
 Dengan panduan ini, Qubicoin akan tampil seragam di seluruh ekosistem STG‑UNIFIED, memperkuat identitas visual dan kepercayaan publik.  
 
-Apakah Anda ingin saya lanjutkan membuat **template presentasi investor Qubicoin** agar branding ini bisa langsung digunakan untuk pitching dan publikasi resmi?
