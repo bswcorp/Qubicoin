@@ -1,4 +1,4 @@
-**brand guideline mini Qubicoin**
+# **brand guideline mini Qubicoin**
 #
 agar semua tampilan visual di STG‑UNIFIED dan ekosistem STG‑Chain seragam, profesional, dan mudah dikenali publik.  
 
