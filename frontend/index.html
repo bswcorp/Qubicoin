@@ -536,6 +536,57 @@
     loadTransactionHistory();
 
   </script>
+    // LOAD TX HISTORY
 
+    function loadTransactionHistory() {
+
+      let history =
+        JSON.parse(
+          localStorage.getItem("qbc_tx_history")
+        ) || [];
+
+      const txLog =
+        document.getElementById("txLog");
+
+      txLog.innerHTML = "";
+
+      history.forEach((tx) => {
+
+        const item =
+          document.createElement("div");
+
+        item.className = "tx-item";
+
+        item.innerText = tx;
+
+        txLog.appendChild(item);
+
+      });
+
+    }
+
+
+    // CLEAR TX
+
+    window.clearTransactions = () => {
+
+      localStorage.removeItem("qbc_tx_history");
+
+      document.getElementById(
+        "txLog"
+      ).innerHTML =
+        `<div class="empty-tx">No transactions yet.</div>`;
+
+    };
+
+
+    // AUTO LOAD HISTORY
+
+    loadTransactionHistory();
+
+  </script>
+
+</body>
+</html>
 </body>
               </html>
