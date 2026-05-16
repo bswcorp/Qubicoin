@@ -14,7 +14,36 @@ Chainstack MCP
  ┌──────┼──────┐
  ▼             ▼
 Blockchain     Smart Contracts
-RPC            Wallet Engine
+Engineine            Wallet Engine
+
+---
+Qubicoin/ (Root)
+├── frontend/
+│   ├── index.html
+│   ├── app.js
+│   └── config.js
+└── backend/
+    ├── .env
+    ├── .gitignore
+    ├── server.js
+    ├── config/
+    │   ├── db.js
+    │   └── blockchain.js
+    ├── controllers/
+    │   ├── authController.js
+    │   └── walletController.js
+    ├── models/
+    │   ├── userModel.js
+    │   └── transactionModel.js
+    ├── routes/
+    │   ├── authRoutes.js
+    │   └── walletRoutes.js
+    ├── middlewares/
+    │   └── authMiddleware.js
+    └── services/
+        └── ethService.js
+
+---        
 
 ## 📌 Overview
 Qubicoin adalah native coin dari ekosistem **Sovereign Titan Genesis (STG)**.  
