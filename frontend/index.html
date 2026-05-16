@@ -4,52 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Qubicoin Wallet Dashboard</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Custom Glassmorphism UI Style -->
+  <script src="https://tailwindcss.com"></script>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
-  <!-- HEADER -->
   <header class="hero-header">
-    <img
-      src="https://raw.githubusercontent.com/Sovereign-Titan-Genesis/STG--UNIFIED/main/assets/banner/qubicoin_header.png"
-      alt="Qubicoin Banner"
-      class="hero-banner"
-    />
+    <img src="https://githubusercontent.com" alt="Qubicoin Banner" class="hero-banner" />
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <img
-        src="https://raw.githubusercontent.com/Sovereign-Titan-Genesis/STG--UNIFIED/main/assets/logo/qubicoin.png"
-        alt="Qubicoin Logo"
-        class="hero-logo"
-      />
+      <img src="https://githubusercontent.com" alt="Qubicoin Logo" class="hero-logo" />
       <h1 class="hero-title">QUBICOIN</h1>
-      <p class="hero-subtitle">
-        The Future of Decentralized Digital Wealth & Financial Infrastructure
-      </p>
-      <button id="btnConnectHero" onclick="window.connectWallet()" class="primary-btn">
-        CONNECT WALLET
-      </button>
+      <p class="hero-subtitle">The Future of Decentralized Digital Wealth & Financial Infrastructure</p>
+      <button id="btnConnectHero" onclick="window.connectWallet()" class="primary-btn">CONNECT WALLET</button>
     </div>
   </header>
 
-  <!-- MAIN LAYOUT -->
   <main class="main-layout">
-
-    <!-- SIDEBAR -->
     <aside class="sidebar">
-      <!-- WALLET CARD -->
       <div class="glass-card">
         <h2 class="card-title">Wallet</h2>
-        <p id="walletAddress" class="wallet-address">Not Connected</p>
-        <button id="btnConnectSidebar" onclick="window.connectWallet()" class="primary-btn full-btn">
-          Connect MetaMask
-        </button>
+        <div class="flex items-center justify-between gap-2 mb-4">
+          <p id="walletAddress" class="wallet-address truncate m-0">Not Connected</p>
+          <button id="btnCopy" onclick="window.copyWallet()" class="px-2 py-1 text-xs bg-white/10 hover:bg-white/20 rounded border border-white/20 text-white transition hidden">Copy</button>
+        </div>
+        <button id="btnConnectSidebar" onclick="window.connectWallet()" class="primary-btn full-btn">Connect MetaMask</button>
       </div>
 
-      <!-- BALANCE CARD -->
       <div class="glass-card">
         <h2 class="card-title">Balance</h2>
         <div class="balance-box">
@@ -59,7 +40,6 @@
         <p class="muted-text">ERC-20 Asset</p>
       </div>
 
-      <!-- NETWORK CARD -->
       <div class="glass-card">
         <h2 class="card-title">Network</h2>
         <p id="networkName" class="success-text">Detecting...</p>
@@ -67,16 +47,10 @@
       </div>
     </aside>
 
-    <!-- CONTENT AREA -->
     <section class="content-area">
-      <!-- DASHBOARD INFO -->
       <div class="glass-card big-card">
         <div class="dashboard-header">
-          <img
-            src="https://raw.githubusercontent.com/Sovereign-Titan-Genesis/STG--UNIFIED/main/assets/logo/qubicoin.png"
-            alt="Qubicoin"
-            class="dashboard-logo"
-          />
+          <img src="https://githubusercontent.com" alt="Qubicoin" class="dashboard-logo" />
           <div>
             <h2 class="dashboard-title">Qubicoin Dashboard</h2>
             <p class="muted-text">Real-time blockchain asset overview</p>
@@ -98,28 +72,22 @@
           </div>
           <div class="mini-card">
             <p class="muted-text">Contract Address</p>
-            <h3 class="contract-address">0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512</h3>
+            <h3 class="contract-address text-xs break-all">0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512</h3>
           </div>
         </div>
 
-        <button onclick="window.loadTokenData()" class="primary-btn">
-          REFRESH TOKEN DATA
-        </button>
+        <button onclick="window.loadTokenData()" class="primary-btn">REFRESH TOKEN DATA</button>
       </div>
 
-      <!-- TRANSFER FORM -->
       <div class="glass-card big-card">
         <h2 class="dashboard-title">Transfer QBC</h2>
         <div class="transfer-form">
           <input id="recipient" type="text" placeholder="Recipient Wallet Address" class="input-box" />
           <input id="amount" type="number" placeholder="Amount" class="input-box" />
-          <button onclick="window.sendTokens()" class="primary-btn full-btn">
-            SEND QBC
-          </button>
+          <button id="btnSendToken" onclick="window.sendTokens()" class="primary-btn full-btn">SEND QBC</button>
         </div>
       </div>
 
-      <!-- TRANSACTION LOG -->
       <div class="glass-card big-card">
         <div class="tx-header">
           <h2 class="dashboard-title">Transaction Activity</h2>
@@ -130,11 +98,9 @@
         </div>
       </div>
     </section>
-
   </main>
 
-  <!-- LOGIC APP (Ethers v6 & Auto Network Check) -->
+  <!-- PENTING: Type="module" agar bisa mengimpor config.js -->
   <script type="module" src="./app.js"></script>
-
 </body>
 </html>
