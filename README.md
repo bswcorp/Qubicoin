@@ -1,5 +1,21 @@
 # 🪙 Qubicoin — Native Coin of STG
 
+Qubicoin Frontend
+        │
+        ▼
+STG Backend API
+        │
+        ▼
+AI Agent Layer
+        │
+        ▼
+Chainstack MCP
+        │
+ ┌──────┼──────┐
+ ▼             ▼
+Blockchain     Smart Contracts
+RPC            Wallet Engine
+
 ## 📌 Overview
 Qubicoin adalah native coin dari ekosistem **Sovereign Titan Genesis (STG)**.  
 Berfungsi sebagai unit dasar untuk swap, distribusi, dan integrasi lintas 12 Pilar.
