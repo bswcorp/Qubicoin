@@ -3,34 +3,591 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Qubicoin Wallet Dashboard</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <style>
-    body {
-      background: #050816;
-      color: white;
-      font-family: Arial, sans-serif;
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+
+  <!-- HEADER -->
+
+  <header class="hero-header">
+
+    <img
+      src="https://raw.githubusercontent.com/Sovereign-Titan-Genesis/STG--UNIFIED/main/assets/banner/qubicoin_header.png"
+      alt="Qubicoin Banner"
+      class="hero-banner"
+    />
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+
+      <img
+        src="https://raw.githubusercontent.com/Sovereign-Titan-Genesis/STG--UNIFIED/main/assets/logo/qubicoin.png"
+        alt="Qubicoin Logo"
+        class="hero-logo"
+      />
+
+      <h1 class="hero-title">
+        QUBICOIN
+      </h1>
+
+      <p class="hero-subtitle">
+        The Future of Decentralized Digital Wealth & Financial Infrastructure
+      </p>
+
+      <button
+        onclick="connectWallet()"
+        class="primary-btn"
+      >
+        CONNECT WALLET
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- MAIN -->
+
+  <main class="main-layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+      <!-- WALLET -->
+
+      <div class="glass-card">
+
+        <h2 class="card-title">
+          Wallet
+        </h2>
+
+        <p id="walletAddress" class="wallet-address">
+          Not Connected
+        </p>
+
+        <button
+          onclick="connectWallet()"
+          class="primary-btn full-btn"
+        >
+          Connect MetaMask
+        </button>
+
+      </div>
+
+
+      <!-- BALANCE -->
+
+      <div class="glass-card">
+
+        <h2 class="card-title">
+          Balance
+        </h2>
+
+        <div class="balance-box">
+
+          <span id="tokenBalance">
+            0
+          </span>
+
+          <span class="gold-text">
+            QBC
+          </span>
+
+        </div>
+
+        <p class="muted-text">
+          ERC-20 Asset
+        </p>
+
+      </div>
+
+
+      <!-- NETWORK -->
+
+      <div class="glass-card">
+
+        <h2 class="card-title">
+          Network
+        </h2>
+
+        <p class="success-text">
+          Quorum State Chain
+        </p>
+
+        <p class="muted-text">
+          RPC : http://127.0.0.1:8545
+        </p>
+
+      </div>
+
+    </aside>
+
+
+    <!-- CONTENT -->
+
+    <section class="content-area">
+
+      <!-- DASHBOARD -->
+
+      <div class="glass-card big-card">
+
+        <div class="dashboard-header">
+
+          <img
+            src="https://raw.githubusercontent.com/Sovereign-Titan-Genesis/STG--UNIFIED/main/assets/logo/qubicoin.png"
+            alt="Qubicoin"
+            class="dashboard-logo"
+          />
+
+          <div>
+
+            <h2 class="dashboard-title">
+              Qubicoin Dashboard
+            </h2>
+
+            <p class="muted-text">
+              Real-time blockchain asset overview
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="token-grid">
+
+          <div class="mini-card">
+            <p class="muted-text">Token Name</p>
+            <h3 id="tokenName">Loading...</h3>
+          </div>
+
+          <div class="mini-card">
+            <p class="muted-text">Token Symbol</p>
+            <h3 id="tokenSymbol">Loading...</h3>
+          </div>
+
+          <div class="mini-card">
+            <p class="muted-text">Total Supply</p>
+            <h3 id="tokenSupply">Loading...</h3>
+          </div>
+
+          <div class="mini-card">
+            <p class="muted-text">Contract Address</p>
+
+            <h3 class="contract-address">
+              0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+            </h3>
+          </div>
+
+        </div>
+
+
+        <button
+          onclick="loadTokenData()"
+          class="primary-btn"
+        >
+          REFRESH TOKEN DATA
+        </button>
+
+      </div>
+
+
+      <!-- TRANSFER -->
+
+      <div class="glass-card big-card">
+
+        <h2 class="dashboard-title">
+          Transfer QBC
+        </h2>
+
+        <div class="transfer-form">
+
+          <input
+            id="recipient"
+            type="text"
+            placeholder="Recipient Wallet Address"
+            class="input-box"
+          />
+
+          <input
+            id="amount"
+            type="number"
+            placeholder="Amount"
+            class="input-box"
+          />
+
+          <button
+            onclick="sendTokens()"
+            class="primary-btn full-btn"
+          >
+            SEND QBC
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- TRANSACTION -->
+
+      <div class="glass-card big-card">
+
+        <div class="tx-header">
+
+          <h2 class="dashboard-title">
+            Transaction Activity
+          </h2>
+
+          <button
+            onclick="clearTransactions()"
+            class="danger-btn"
+          >
+            CLEAR
+          </button>
+
+        </div>
+
+        <div id="txLog" class="tx-log">
+
+          <div class="empty-tx">
+            No transactions yet.
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ETHERS -->
+
+  <script type="module">
+
+    import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js";
+
+    const CONTRACT_ADDRESS =
+      "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+
+    const CONTRACT_ABI = [
+
+      "function name() view returns (string)",
+      "function symbol() view returns (string)",
+      "function totalSupply() view returns (uint256)",
+      "function balanceOf(address owner) view returns (uint256)",
+      "function transfer(address to, uint amount) returns (bool)"
+
+    ];
+
+    let provider;
+    let signer;
+    let contract;
+    let currentAccount;
+
+
+    // CONNECT WALLET
+
+    window.connectWallet = async () => {
+
+      if (!window.ethereum) {
+
+        alert("Please install MetaMask");
+
+        return;
+      }
+
+      try {
+
+        provider = new ethers.BrowserProvider(window.ethereum);
+
+        await provider.send("eth_requestAccounts", []);
+
+        signer = await provider.getSigner();
+
+        currentAccount = await signer.getAddress();
+
+        contract = new ethers.Contract(
+          CONTRACT_ADDRESS,
+          CONTRACT_ABI,
+          signer
+        );
+
+        document.getElementById(
+          "walletAddress"
+        ).innerText = currentAccount;
+
+        addTxLog("✅ Wallet connected");
+
+        loadTokenData();
+
+        loadBalance();
+
+      } catch (err) {
+
+        console.error(err);
+
+        addTxLog("❌ Wallet connection failed");
+
+      }
+
+    };
+
+
+    // LOAD TOKEN DATA
+
+    window.loadTokenData = async () => {
+
+      try {
+
+        const name = await contract.name();
+
+        const symbol = await contract.symbol();
+
+        const supply = await contract.totalSupply();
+
+        document.getElementById(
+          "tokenName"
+        ).innerText = name;
+
+        document.getElementById(
+          "tokenSymbol"
+        ).innerText = symbol;
+
+        document.getElementById(
+          "tokenSupply"
+        ).innerText =
+          Number(
+            ethers.formatUnits(supply, 18)
+          ).toLocaleString();
+
+      } catch (err) {
+
+        console.error(err);
+
+      }
+
+    };
+
+
+    // LOAD BALANCE
+
+    async function loadBalance() {
+
+      try {
+
+        const balance =
+          await contract.balanceOf(currentAccount);
+
+        document.getElementById(
+          "tokenBalance"
+        ).innerText =
+          Number(
+            ethers.formatUnits(balance, 18)
+          ).toLocaleString();
+
+      } catch (err) {
+
+        console.error(err);
+
+      }
+
     }
 
-    .glass {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1);
+
+    // SEND TOKEN
+
+    window.sendTokens = async () => {
+
+      const recipient =
+        document.getElementById("recipient").value;
+
+      const amount =
+        document.getElementById("amount").value;
+
+      if (!recipient || !amount) {
+
+        alert("Please fill all fields");
+
+        return;
+      }
+
+      try {
+
+        addTxLog("⏳ Sending transaction...");
+
+        const tx = await contract.transfer(
+          recipient,
+          ethers.parseUnits(amount, 18)
+        );
+
+        addTxLog("⏳ TX Submitted : " + tx.hash);
+
+        await tx.wait();
+
+        addTxLog("✅ Transfer Success : " + tx.hash);
+
+        loadBalance();
+
+      } catch (err) {
+
+        console.error(err);
+
+        addTxLog("❌ Transaction Failed");
+
+      }
+
+    };
+
+
+    // TX LOG
+
+    function addTxLog(message) {
+
+      const txLog =
+        document.getElementById("txLog");
+
+      const item =
+        document.createElement("div");
+
+      item.className = "tx-item";
+
+      item.innerText = message;
+
+      txLog.prepend(item);
+
+      saveTransaction(message);
+
     }
 
-    .gold {
-      color: #f5c542;
+
+    // SAVE TX
+
+    function saveTransaction(message) {
+
+      let history =
+        JSON.parse(
+          localStorage.getItem("qbc_tx_history")
+        ) || [];
+
+      history.unshift(message);
+
+      localStorage.setItem(
+        "qbc_tx_history",
+        JSON.stringify(history)
+      );
+
     }
 
-    .gold-bg {
-      background: linear-gradient(90deg, #f5c542, #ffdd74);
-      color: black;
+
+    // LOAD TX HISTORY
+
+    function loadTransactionHistory() {
+
+      let history =
+        JSON.parse(
+          localStorage.getItem("qbc_tx_history")
+        ) || [];
+
+      const txLog =
+        document.getElementById("txLog");
+
+      txLog.innerHTML = "";
+
+      history.forEach((tx) => {
+
+        const item =
+          document.createElement("div");
+
+        item.className = "tx-item";
+
+        item.innerText = tx;
+
+        txLog.appendChild(item);
+
+      });
+
     }
 
-    .card-hover:hover {
-      transform: translateY(-4px);
-      transition: 0.3s;
-      box-shadow: 0 0 20px rgba(245,197,66,0.3);
-        </html>
+
+    // CLEAR TX
+
+    window.clearTransactions = () => {
+
+      localStorage.removeItem("qbc_tx_history");
+
+      document.getElementById(
+        "txLog"
+      ).innerHTML =
+        `<div class="empty-tx">No transactions yet.</div>`;
+
+    };
+
+
+    loadTransactionHistory();
+
+  </script>
+
+</body>
+</html>
+    // LOAD TX HISTORY
+
+    function loadTransactionHistory() {
+
+      let history =
+        JSON.parse(
+          localStorage.getItem("qbc_tx_history")
+        ) || [];
+
+      const txLog =
+        document.getElementById("txLog");
+
+      txLog.innerHTML = "";
+
+      history.forEach((tx) => {
+
+        const item =
+          document.createElement("div");
+
+        item.className = "tx-item";
+
+        item.innerText = tx;
+
+        txLog.appendChild(item);
+
+      });
+
+    }
+
+
+    // CLEAR TX
+
+    window.clearTransactions = () => {
+
+      localStorage.removeItem("qbc_tx_history");
+
+      document.getElementById(
+        "txLog"
+      ).innerHTML =
+        `<div class="empty-tx">No transactions yet.</div>`;
+
+    };
+
+
+    // AUTO LOAD HISTORY
+
+    loadTransactionHistory();
+
+  </script>
+
+</body>
+</html>
