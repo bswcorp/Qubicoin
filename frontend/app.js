@@ -1,9 +1,5 @@
-import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js";
-
-// KONFIGURASI STG NETWORK (CHAIN ID 8081)
-const CONTRACT_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-const STG_CHAIN_ID_HEX = "0x1F91"; // Hex dari 8081
-const STG_CHAIN_ID_DEC = 8081;
+import { ethers } from "https://jsdelivr.net";
+import { CONFIG } from "./config.js";
 
 const CONTRACT_ABI = [
   "function name() view returns (string)",
@@ -18,7 +14,7 @@ let signer;
 let contract;
 let currentAccount;
 
-// INISIALISASI AWAL SAAT HALAMAN DI-LOAD
+// INITIAL LOAD HANDLER
 window.addEventListener("DOMContentLoaded", () => {
   loadTransactionHistory();
   if (window.ethereum) {
@@ -28,19 +24,26 @@ window.addEventListener("DOMContentLoaded", () => {
   } else {
     document.getElementById("networkName").innerText = "No Wallet Detected";
   }
+
+  // UPGRADE 4: Auto Refresh Balance real-time setiap 10 detik
+  setInterval(() => {
+    if (currentAccount && contract) {
+      loadBalance();
+    }
+  }, 10000);
 });
 
-// VERIFIKASI & OTOMATIS SWAP JARINGAN KE 8081
+// NETWORK VALIDATION & AUTO SWITCH
 async function verifyAndSwitchNetwork() {
   if (!window.ethereum) return false;
   try {
     const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
-    if (currentChainId !== STG_CHAIN_ID_HEX) {
-      addTxLog(`⏳ Jaringan salah. Mengalihkan ke STG Network (${STG_CHAIN_ID_DEC})...`);
+    if (currentChainId !== CONFIG.chainHex) {
+      addTxLog(`⏳ Jaringan salah. Mengalihkan ke STG Network (${CONFIG.chainId})...`);
       try {
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: STG_CHAIN_ID_HEX }],
+          params: [{ chainId: CONFIG.chainHex }],
         });
         return true;
       } catch (switchError) {
@@ -49,10 +52,10 @@ async function verifyAndSwitchNetwork() {
             await window.ethereum.request({
               method: "wallet_addEthereumChain",
               params: [{
-                chainId: STG_CHAIN_ID_HEX,
+                chainId: CONFIG.chainHex,
                 chainName: "STG Hardhat Node",
                 nativeCurrency: { name: "STG ETH", symbol: "ETH", decimals: 18 },
-                rpcUrls: ["http://127.0.0.1:8545"],
+                rpcUrls: [CONFIG.rpc],
               }],
             });
             return true;
@@ -72,7 +75,6 @@ async function verifyAndSwitchNetwork() {
   }
 }
 
-// CEK STATUS KONEKSI WALLET LAMA
 async function checkExistingConnection() {
   const accounts = await window.ethereum.request({ method: "eth_accounts" });
   if (accounts.length > 0) {
@@ -83,7 +85,6 @@ async function checkExistingConnection() {
   }
 }
 
-// TOMBOL SAMBUNG WALLET
 window.connectWallet = async () => {
   if (!window.ethereum) {
     alert("Please install MetaMask");
@@ -100,18 +101,21 @@ window.connectWallet = async () => {
   }
 };
 
-// INITIALIZE DATA DENGAN ETHERS V6
 async function initEthers() {
   provider = new ethers.BrowserProvider(window.ethereum);
   signer = await provider.getSigner();
   currentAccount = await signer.getAddress();
   
-  contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+  contract = new ethers.Contract(CONFIG.contract, CONTRACT_ABI, signer);
 
   // Update Tampilan UI Status Connected
   document.getElementById("walletAddress").innerText = `${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
-  document.getElementById("networkName").innerText = "STG Network (8081)";
+  document.getElementById("networkName").innerText = `STG Network (${CONFIG.chainId})`;
   
+  // Tampilkan tombol copy jika wallet sudah terhubung
+  const btnCopy = document.getElementById("btnCopy");
+  if (btnCopy) btnCopy.classList.remove("hidden");
+
   const btnHero = document.getElementById("btnConnectHero");
   const btnSidebar = document.getElementById("btnConnectSidebar");
   if(btnHero) btnHero.innerText = "CONNECTED";
@@ -122,9 +126,23 @@ async function initEthers() {
   loadBalance();
 }
 
-// AMBIL DATA TOKEN CONTRACT
+// UPGRADE 2: Fitur Copy Wallet Address Ke Clipboard
+window.copyWallet = async () => {
+  if (!currentAccount) return;
+  try {
+    await navigator.clipboard.writeText(currentAccount);
+    addTxLog("📋 Address copied to clipboard");
+  } catch (err) {
+    console.error("Failed to copy address", err);
+  }
+};
+
 window.loadTokenData = async () => {
-  if (!contract) return;
+  // BUG 5: Validasi Status Kontrak Terhubung
+  if (!contract) {
+    alert("Connect wallet first");
+    return;
+  }
   try {
     const name = await contract.name();
     const symbol = await contract.symbol();
@@ -139,7 +157,6 @@ window.loadTokenData = async () => {
   }
 };
 
-// AMBIL SALDO DOMPET USER
 async function loadBalance() {
   if (!contract) return;
   try {
@@ -150,22 +167,45 @@ async function loadBalance() {
   }
 }
 
-// FITUR KIRIM TOKEN ERC20
+// TRANSMIT TRANSACTION & VALIDATIONS
 window.sendTokens = async () => {
-  const recipient = document.getElementById("recipient").value;
-  const amount = document.getElementById("amount").value;
-
-  if (!recipient || !amount) {
-    alert("Please fill all fields");
+  // BUG 5: Validasi Cek Status Koneksi Kontrak
+  if (!contract) {
+    alert("Connect wallet first");
     return;
   }
+
+  const recipient = document.getElementById("recipient").value.trim();
+  const amount = document.getElementById("amount").value;
+
+  // BUG 3: Validasi Struktur Alamat Wallet Tujuan
+  if (!ethers.isAddress(recipient)) {
+    alert("Invalid wallet address");
+    return;
+  }
+
+  // BUG 4: Validasi Batas Nominal Nilai Jumlah Transfer
+  if (Number(amount) <= 0 || !amount) {
+    alert("Invalid amount");
+    return;
+  }
+
   const isCorrectNet = await verifyAndSwitchNetwork();
   if (!isCorrectNet) return;
 
+  const btnSend = document.getElementById("btnSendToken");
+  const originalText = btnSend.innerText;
+
   try {
+    // UPGRADE 1: Memasang Status Animasi Pemuatan Button (Loading State)
+    btnSend.innerText = "Processing...";
+    btnSend.disabled = true;
+
     addTxLog("⏳ Sending transaction...");
     const tx = await contract.transfer(recipient, ethers.parseUnits(amount, 18));
-    addTxLog(`⏳ TX Submitted: ${tx.hash.substring(0,10)}...`);
+    
+    // UPGRADE 3: Memanfaatkan tautan Block Explorer lokal
+    addTxLog(`⏳ TX Submitted. Check Explorer: ${CONFIG.explorer}/tx/${tx.hash}`);
 
     await tx.wait();
     addTxLog(`✅ Transfer Success!`);
@@ -178,10 +218,14 @@ window.sendTokens = async () => {
   } catch (err) {
     console.error(err);
     addTxLog("❌ Transaksi gagal atau dibatalkan.");
+  } finally {
+    // Kembalikan status tombol ke kondisi semula setelah proses selesai
+    btnSend.innerText = originalText;
+    btnSend.disabled = false;
   }
 };
 
-// MANAJEMEN RIWAYAT TRANSAKSI (LOCAL STORAGE & LOG UI)
+// LOGGING SYSTEM
 function addTxLog(message) {
   const txLog = document.getElementById("txLog");
   if (!txLog) return;
@@ -221,6 +265,7 @@ function loadTransactionHistory() {
   });
 }
 
+// BUG 1 FIXED: Memperbaiki string terpotong pada penghapusan cache lokal
 window.clearTransactions = () => {
   localStorage.removeItem("qbc_tx_history");
   loadTransactionHistory();
@@ -232,5 +277,4 @@ function handleAccountsChanged(accounts) {
   } else if (accounts[0] !== currentAccount) {
     initEthers();
   }
-}
-  
+    }
